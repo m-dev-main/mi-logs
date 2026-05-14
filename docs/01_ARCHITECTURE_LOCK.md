@@ -15,8 +15,8 @@ MacBook
   ├─ React/Vite dev server
   │    └─ 127.0.0.1:5173
   │
-  └─ Tor onion service later
-       └─ forwards onion:80 → 127.0.0.1:4000 or public web server
+  └─ Static release server for Tor exposure later
+       └─ 127.0.0.1:4080
 ```
 
 Production-local topology:
@@ -24,10 +24,12 @@ Production-local topology:
 ```txt
 MacBook
   ├─ MongoDB local
-  ├─ Express API + static public frontend
+  ├─ Express API for local admin/writer workflows
   │    └─ 127.0.0.1:4000
+  ├─ Readonly static release server
+  │    └─ 127.0.0.1:4080
   └─ Tor onion service
-       └─ HiddenServicePort 80 127.0.0.1:4000
+       └─ HiddenServicePort 80 127.0.0.1:4080
 ```
 
 ## 2. Monorepo Layout
@@ -236,15 +238,16 @@ If future external LAN binding is needed, it must be explicit and documented.
 
 ## 9. Tor Boundary
 
-Tor should forward only the public reader surface.
+Tor should forward only the readonly static release server.
 
 Target v0 Tor forwarding:
 
 ```txt
-HiddenServicePort 80 127.0.0.1:4000
+HiddenServicePort 80 127.0.0.1:4080
 ```
 
-If Express serves both public and admin paths, Express must still reject admin paths from non-local clients.
+The dynamic API remains a local writer/admin system on `127.0.0.1:4000`.
+The admin-capable dynamic API must not be the Tor target.
 
 ## 10. Static vs Dynamic Policy
 

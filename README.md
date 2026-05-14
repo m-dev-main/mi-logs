@@ -10,6 +10,8 @@
 
 **Current status:** v0 local acceptance pass verified for source, release, runtime boundary, and backup audits.
 
+**v0 closure note:** Automated v0 acceptance passes. Remaining unverified items are optional/manual: live Tor, IPFS CLI archival, and the final browser passkey pass.
+
 ## v0 status
 
 Implemented:

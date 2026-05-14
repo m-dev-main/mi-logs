@@ -3,6 +3,7 @@
 !.env.example
 node_modules
 dist
+apps/web/dist
 logs
 releases
 backups
