@@ -1,0 +1,29 @@
+{
+  "name": "mi-log",
+  "private": true,
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "pnpm --parallel --filter @mi-log/api --filter @mi-log/web dev",
+    "dev:api": "pnpm --filter @mi-log/api dev",
+    "dev:web": "pnpm --filter @mi-log/web dev",
+    "dev:ports": "lsof -nP -iTCP:4000 -sTCP:LISTEN; lsof -nP -iTCP:5173 -sTCP:LISTEN",
+    "build": "echo \"build: placeholder\"",
+    "build:web": "pnpm --filter @mi-log/web build",
+    "typecheck": "pnpm -r typecheck",
+    "lint": "echo \"lint: placeholder\"",
+    "generate:author-key": "pnpm --filter @mi-log/api generate:author-key",
+    "export:release": "pnpm --filter @mi-log/api export:release",
+    "serve:release": "pnpm --filter @mi-log/api serve:release",
+    "release": "pnpm build:web && pnpm export:release",
+    "release:serve": "pnpm release && pnpm serve:release",
+    "ipfs:add-release": "node scripts/ipfs-add-release.mjs",
+    "audit:source": "node scripts/audit-source.mjs",
+    "audit:release": "node scripts/audit-release.mjs",
+    "audit:runtime": "node scripts/audit-runtime.mjs",
+    "audit:all": "node scripts/audit-all.mjs",
+    "backup:local": "node scripts/backup-local.mjs",
+    "restore:local": "node scripts/restore-local.mjs",
+    "audit:backup": "node scripts/audit-backup.mjs",
+    "seed:api:posts": "pnpm --filter @mi-log/api seed:posts"
+  }
+}

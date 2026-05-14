@@ -1,0 +1,57 @@
+:root {
+  color-scheme: dark;
+
+  --color-bg: #100f0d;
+  --color-bg-soft: #171410;
+  --color-bg-elevated: #211d17;
+  --color-bg-glass: rgba(33, 29, 23, 0.74);
+  --color-text: #f3eadc;
+  --color-text-muted: #c6b9a7;
+  --color-text-soft: #9f927f;
+  --color-border: rgba(232, 210, 177, 0.18);
+  --color-border-strong: rgba(232, 210, 177, 0.34);
+  --color-accent: #f0c985;
+  --color-accent-strong: #ffd891;
+  --color-accent-soft: rgba(240, 201, 133, 0.14);
+  --color-success: #9bd8b0;
+  --color-success-soft: rgba(155, 216, 176, 0.14);
+  --color-warning: #f1c982;
+  --color-warning-soft: rgba(241, 201, 130, 0.14);
+  --color-danger: #f0a19a;
+  --color-danger-soft: rgba(240, 161, 154, 0.14);
+  --color-focus: #ffe0a6;
+
+  --font-serif: ui-serif, Georgia, Cambria, "Times New Roman", Times, serif;
+  --font-sans: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+
+  --text-xs: 0.78rem;
+  --text-sm: 0.9rem;
+  --text-md: 1rem;
+  --text-lg: 1.16rem;
+  --text-xl: clamp(1.45rem, 2.8vw, 2rem);
+  --text-2xl: clamp(2.4rem, 8vw, 5.8rem);
+
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 3rem;
+  --space-8: 4.5rem;
+
+  --radius-sm: 0.55rem;
+  --radius-md: 0.9rem;
+  --radius-lg: 1.35rem;
+  --radius-pill: 999px;
+
+  --shadow-soft: 0 24px 70px rgba(0, 0, 0, 0.34);
+  --shadow-border: inset 0 0 0 1px var(--color-border);
+
+  --z-header: 10;
+
+  --motion-fast: 140ms;
+  --motion-base: 220ms;
+}

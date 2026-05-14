@@ -1,0 +1,32 @@
+{
+  "name": "@mi-log/api",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js",
+    "typecheck": "tsc --noEmit",
+    "generate:author-key": "tsx src/scripts/generateAuthorKey.ts",
+    "export:release": "tsx src/scripts/exportRelease.ts",
+    "serve:release": "tsx src/scripts/serveRelease.ts",
+    "seed:posts": "tsx src/scripts/seedPosts.ts"
+  },
+  "dependencies": {
+    "@mi-log/shared": "workspace:*",
+    "@simplewebauthn/server": "^13.3.0",
+    "cookie": "^1.1.1",
+    "express": "^4.21.2",
+    "marked": "^17.0.1",
+    "mongodb": "^6.12.0",
+    "nanoid": "^5.1.11",
+    "sanitize-html": "^2.17.0"
+  },
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.10.0",
+    "@types/sanitize-html": "^2.16.0",
+    "tsx": "^4.19.2",
+    "typescript": "^5.7.2"
+  }
+}
