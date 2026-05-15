@@ -3,6 +3,8 @@ import { Card } from "../ui/Card";
 
 type PostMetadataPanelProps = {
   post: PublicPostDetail;
+  readingTimeMinutes: number;
+  wordCount: number;
 };
 
 function formatDateTime(value: string): string {
@@ -12,11 +14,25 @@ function formatDateTime(value: string): string {
   }).format(new Date(value));
 }
 
-export function PostMetadataPanel({ post }: PostMetadataPanelProps) {
+export function PostMetadataPanel({
+  post,
+  readingTimeMinutes,
+  wordCount,
+}: PostMetadataPanelProps) {
   return (
     <Card className="metadata-panel">
       <h2>Verification metadata</h2>
       <dl>
+        <div>
+          <dt>Estimated reading time</dt>
+          <dd>
+            {readingTimeMinutes} {readingTimeMinutes === 1 ? "minute" : "minutes"}
+          </dd>
+        </div>
+        <div>
+          <dt>Public word count</dt>
+          <dd>{wordCount}</dd>
+        </div>
         <div>
           <dt>Slug</dt>
           <dd>{post.slug}</dd>

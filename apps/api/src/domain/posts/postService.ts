@@ -34,6 +34,7 @@ export type PublicPostListQuery = {
   page?: unknown;
   limit?: unknown;
   tag?: unknown;
+  q?: unknown;
 };
 
 export type PublicPostListResult = {
@@ -97,11 +98,13 @@ function normalizeListQuery(query: PublicPostListQuery) {
     parsePositiveInteger(query.limit, "limit") ?? DEFAULT_LIMIT;
   const limit = Math.min(requestedLimit, MAX_LIMIT);
   const tag = readSingleQueryValue(query.tag, "tag");
+  const q = readSingleQueryValue(query.q, "q");
 
   return {
     page,
     limit,
     tag: tag && tag.length > 0 ? tag : undefined,
+    q: q && q.length > 0 ? q : undefined,
   };
 }
 
@@ -111,7 +114,7 @@ export async function listPublicPosts(
   const options = normalizeListQuery(query);
   const [posts, total] = await Promise.all([
     listPublishedPosts(options),
-    countPublishedPosts({ tag: options.tag }),
+    countPublishedPosts({ tag: options.tag, q: options.q }),
   ]);
 
   return {

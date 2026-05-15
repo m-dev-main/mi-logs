@@ -28,7 +28,13 @@ export function PostListItem({ post }: PostListItemProps) {
       <p>{post.excerpt}</p>
       <div className="chip-row" aria-label="Tags">
         {post.tags.map((tag) => (
-          <Chip key={tag} label={tag} />
+          <Link
+            key={tag}
+            className="tag-link"
+            to={`/search?tag=${encodeURIComponent(tag)}`}
+          >
+            <Chip label={tag} />
+          </Link>
         ))}
       </div>
     </article>

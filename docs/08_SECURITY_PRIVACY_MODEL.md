@@ -2,6 +2,20 @@
 
 ## 1. Main Threat Model
 
+### 1.1 Loopback forwarders (Tor misconfiguration, local reverse proxies)
+
+A **loopback TCP connection does not always mean “human at this laptop opened a browser to the API.”** Processes on the same machine—including Tor when an onion service maps to a local port—often connect to `127.0.0.1` from the server’s perspective. If the API were mistakenly targeted by `HiddenServicePort`, **admin/auth routes could see `remoteAddress` as loopback while the HTTP `Host` reflects the public onion name** (or another forwarded hostname).
+
+Therefore:
+
+- **Tor must target only the readonly static release port** (default `127.0.0.1:4080`), never the API port (default `4000`).
+- **Admin and auth routes require both** a loopback peer **and** an allowed local `Host` header (API bind host/port and the configured `WEBAUTHN_ORIGIN` host/port for the Vite dev proxy). This blocks the common accidental misconfiguration where Tor reaches the API with a non-local `Host`.
+- **Admin write routes** additionally require a valid **admin session** (and CSRF where applicable). Passkey verification still binds cryptographic assertions to configured local WebAuthn origins.
+
+A determined attacker who can send arbitrary HTTP to a loopback listener could still spoof `Host`; mitigating that class of threat requires **not exposing the API on the Tor path** (architecture) and keeping passkey verification strict—not treating “loopback socket” as equivalent to “owner intent.”
+
+## 1.2 Main protections (summary)
+
 The project protects against:
 
 - DNS name dependency
@@ -50,16 +64,18 @@ The public reader should not be able to:
 Admin protection stack:
 
 ```txt
-localhost-only network check
+loopback TCP peer (socket; not sufficient alone under local forwarders)
       ↓
-WebAuthn/passkey owner login later
+allowed local Host header (admin/auth routes)
+      ↓
+WebAuthn/passkey owner session (mutations require session + CSRF in v0)
       ↓
 HttpOnly SameSite session cookie
       ↓
 CSRF protection for mutations
 ```
 
-Localhost-only is not a replacement for authentication, but it is an important boundary.
+Localhost-only (loopback **and** local `Host`) is not a replacement for authentication, but it is an important boundary—especially because Tor or another local proxy can make remote-originated traffic appear as a loopback connection.
 
 ## 4. Tor Privacy
 

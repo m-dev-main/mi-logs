@@ -142,9 +142,11 @@ If draft/missing:
 
 ## 4. Admin Routes
 
-All admin routes require localhost-only access.
+All admin routes require:
 
-Later they also require WebAuthn admin session.
+1. A loopback TCP peer (see `docs/08_SECURITY_PRIVACY_MODEL.md` — insufficient alone under local forwarders).
+2. An HTTP **`Host` header** matching the configured local API bind (`API_HOST` + `API_PORT`) or the local Web UI origin used for dev (`WEBAUTHN_ORIGIN` host + port, so the Vite proxy’s forwarded `Host` is accepted).
+3. A valid **WebAuthn admin session** for every `/api/v1/admin/posts` route (v0), including reads.
 
 ### GET `/api/v1/admin/posts`
 
@@ -205,7 +207,10 @@ Later behavior may switch to archive.
 
 ## 5. Auth Routes Planned
 
-Localhost-only:
+Localhost-only (see `docs/08_SECURITY_PRIVACY_MODEL.md`):
+
+- loopback TCP peer **and**
+- allowed local **`Host`** (same rules as admin routes)
 
 ```txt
 POST /api/v1/auth/webauthn/register/options
@@ -223,7 +228,7 @@ Rules:
 - no email login
 - session cookie is HttpOnly
 - session cookie is SameSite=Strict
-- auth routes remain localhost-only
+- auth routes use the same loopback + local Host gate as admin routes (not `X-Forwarded-For`)
 
 ## 6. Security Headers
 

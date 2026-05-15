@@ -72,7 +72,7 @@ export function PostForm({
         label="Body markdown"
         name="bodyMarkdown"
         onChange={(event) => updateField("bodyMarkdown", event.target.value)}
-        rows={18}
+        rows={26}
         value={value.bodyMarkdown}
       />
       <Input

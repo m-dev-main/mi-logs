@@ -1,4 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
+import { Link } from "react-router-dom";
 import { getApiStatus, listPublicPosts, PublicApiError } from "../api/client";
 import { PostList } from "../components/posts/PostList";
 import { Chip } from "../components/ui/Chip";
@@ -100,7 +101,13 @@ export function HomePage() {
             {tags.length > 0 ? (
               <div className="chip-row">
                 {tags.map((tag) => (
-                  <Chip key={tag} label={tag} />
+                  <Link
+                    key={tag}
+                    className="tag-link"
+                    to={`/search?tag=${encodeURIComponent(tag)}`}
+                  >
+                    <Chip label={tag} />
+                  </Link>
                 ))}
               </div>
             ) : (

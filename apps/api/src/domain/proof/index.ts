@@ -1,18 +1,19 @@
 import type { ProofPayload } from "@mi-log/shared";
-import { readAuthorPrivateKey, readAuthorPublicKey } from "./authorKeys.js";
+import { readAuthorPublicKey } from "./authorKeys.js";
 import { generateProofManifest } from "./manifest.js";
-import { signCanonicalJson } from "./signing.js";
 
+/**
+ * Proof data for anonymous readers: manifest + optional public key only.
+ * Does not read the author private key or produce live signatures (signatures
+ * ship with `pnpm release` static artifacts).
+ */
 export async function getProofPayload(): Promise<ProofPayload> {
   const manifest = await generateProofManifest();
-  const [privateKey, publicKey] = await Promise.all([
-    readAuthorPrivateKey(),
-    readAuthorPublicKey(),
-  ]);
+  const publicKey = await readAuthorPublicKey();
 
   return {
     manifest,
-    signature: privateKey ? signCanonicalJson(manifest, privateKey) : null,
+    signature: null,
     authorPublicKey: publicKey,
     algorithm: "Ed25519",
   };

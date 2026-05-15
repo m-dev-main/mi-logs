@@ -6,15 +6,36 @@ export type PublishedPostsOptions = {
   page: number;
   limit: number;
   tag?: string;
+  q?: string;
 };
 
 export type CreateDraftPostInput = Omit<PostDocument, "_id">;
 export type UpdatePostForAdminInput = Partial<Omit<PostDocument, "_id">>;
 
-function publishedPostsFilter(tag?: string): Filter<PostDocument> {
+function escapeRegExp(value: string): string {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+function publishedPostsFilter(options: Pick<PublishedPostsOptions, "tag" | "q">): Filter<PostDocument> {
+  const search =
+    options.q && options.q.length > 0
+      ? new RegExp(escapeRegExp(options.q), "i")
+      : null;
+
   return {
     status: "published",
-    ...(tag ? { tags: tag } : {}),
+    ...(options.tag ? { tags: options.tag } : {}),
+    ...(search
+      ? {
+          $or: [
+            { title: search },
+            { excerpt: search },
+            { tags: search },
+            { bodyMarkdown: search },
+            { bodyHtml: search },
+          ],
+        }
+      : {}),
   };
 }
 
@@ -51,7 +72,7 @@ export async function listPublishedPosts(
   const skip = (options.page - 1) * options.limit;
 
   const documents = await getPostsCollection()
-    .find(publishedPostsFilter(options.tag))
+    .find(publishedPostsFilter(options))
     .sort({ publishedAt: -1 })
     .skip(skip)
     .limit(options.limit)
@@ -61,9 +82,9 @@ export async function listPublishedPosts(
 }
 
 export async function countPublishedPosts(
-  options: Pick<PublishedPostsOptions, "tag">,
+  options: Pick<PublishedPostsOptions, "tag" | "q">,
 ): Promise<number> {
-  return getPostsCollection().countDocuments(publishedPostsFilter(options.tag));
+  return getPostsCollection().countDocuments(publishedPostsFilter(options));
 }
 
 export async function findPublishedPostBySlug(slug: string): Promise<Post | null> {

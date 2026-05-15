@@ -1,9 +1,9 @@
 .prose {
-  max-width: 72ch;
+  max-width: var(--reading-max, 72ch);
   color: var(--color-text);
   font-family: var(--font-serif);
-  font-size: var(--text-lg);
-  line-height: 1.78;
+  font-size: calc(var(--text-lg) * var(--reading-scale, 1));
+  line-height: var(--reading-leading, 1.78);
 }
 
 .prose > *:first-child {
@@ -51,9 +51,11 @@
 }
 
 .prose blockquote {
-  border-left: 2px solid var(--color-accent);
+  border-left: 3px solid var(--color-accent);
+  border-radius: 0 var(--radius-md) var(--radius-md) 0;
+  background: var(--color-accent-soft);
   color: var(--color-text-muted);
-  padding-left: var(--space-5);
+  padding: var(--space-3) var(--space-5);
 }
 
 .prose code {
@@ -69,9 +71,12 @@
 .prose pre {
   overflow-x: auto;
   border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  background: rgba(0, 0, 0, 0.28);
-  padding: var(--space-4);
+  border-radius: var(--radius-lg);
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.045), transparent),
+    rgba(0, 0, 0, 0.32);
+  box-shadow: var(--shadow-border);
+  padding: var(--space-5);
 }
 
 .prose pre code {
@@ -83,4 +88,16 @@
 .prose--preview {
   max-width: none;
   font-size: var(--text-md);
+}
+
+.reading-density--compact .prose {
+  --reading-leading: 1.58;
+}
+
+.reading-density--compact .prose p,
+.reading-density--compact .prose ul,
+.reading-density--compact .prose ol,
+.reading-density--compact .prose blockquote,
+.reading-density--compact .prose pre {
+  margin-bottom: 0.9em;
 }

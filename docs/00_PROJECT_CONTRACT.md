@@ -6,7 +6,7 @@
 
 This project is not a normal SaaS blog platform.
 
-It is a personal publishing system where:
+It is an owner-controlled publishing system where:
 
 - writing stays locally controlled
 - public readers get only read-only access
@@ -48,6 +48,10 @@ A local-first, self-owned, cryptographically grounded publishing node.
 14. **Admin stays localhost-only**.
 15. **IPFS is optional archive layer, not required for app startup**.
 16. **The app should remain understandable by one technical person reading the repo**.
+
+### Tor listener invariant
+
+When an onion service is enabled, **`HiddenServicePort` must target only the readonly static release listener** (default `127.0.0.1:4080`). The dynamic API (default `127.0.0.1:4000`) must not share that Tor target. Rationale: local forwarders (including Tor) often terminate with a loopback TCP connection, so **source IP alone is not a sufficient admin boundary**; see `docs/08_SECURITY_PRIVACY_MODEL.md` and `docs/10_TOR_AND_PUBLISHING_MODEL.md`.
 
 ## 4. What the Public Can Access
 

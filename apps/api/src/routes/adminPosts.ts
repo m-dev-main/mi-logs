@@ -10,6 +10,7 @@ import {
 } from "../domain/posts/index.js";
 import { requireAdminSession } from "../middleware/requireAdminSession.js";
 import { requireCsrf } from "../middleware/requireCsrf.js";
+import { requireLocalApiHost } from "../middleware/requireLocalApiHost.js";
 import { requireLocalhost } from "../middleware/requireLocalhost.js";
 
 const router = Router();
@@ -23,6 +24,7 @@ function asyncRoute(
 }
 
 router.use(requireLocalhost);
+router.use(requireLocalApiHost);
 router.use(requireAdminSession);
 
 router.get(

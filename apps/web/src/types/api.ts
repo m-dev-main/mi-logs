@@ -21,6 +21,19 @@ export type PublicPostListItem = {
 
 export type PublicPostDetail = PublicPostListItem & {
   bodyHtml: string;
+  bodyText?: string;
+  readingTimeMinutes?: number;
+  relatedSlugs?: string[];
+  previousSlug?: string | null;
+  nextSlug?: string | null;
+};
+
+export type PublicPostSearchItem = PublicPostListItem & {
+  bodyText?: string;
+  readingTimeMinutes?: number;
+  relatedSlugs?: string[];
+  previousSlug?: string | null;
+  nextSlug?: string | null;
 };
 
 export type PublicPostListResponse = {
