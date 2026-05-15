@@ -201,6 +201,29 @@
   padding: var(--space-5);
 }
 
+.admin-sidebar__release {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+}
+
+.admin-sidebar__release-hint,
+.admin-sidebar__release-status {
+  margin: 0;
+  max-width: 32ch;
+  font-size: 0.8125rem;
+  line-height: 1.45;
+  color: var(--color-text-muted);
+}
+
+.admin-sidebar__release-hint code {
+  font-size: 0.75em;
+}
+
+.admin-sidebar__release-status {
+  color: var(--color-text);
+}
+
 .admin-main {
   min-width: 0;
   padding: var(--space-6);

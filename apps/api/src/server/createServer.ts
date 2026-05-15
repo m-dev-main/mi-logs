@@ -4,6 +4,7 @@ import { notFoundHandler } from "../errors/notFoundHandler.js";
 import { requestLogger } from "../middleware/requestLogger.js";
 import { securityHeaders } from "../middleware/securityHeaders.js";
 import adminPostsRouter from "../routes/adminPosts.js";
+import adminReleaseRouter from "../routes/adminRelease.js";
 import authRouter from "../routes/auth.js";
 import healthRouter from "../routes/health.js";
 import postsRouter from "../routes/posts.js";
@@ -20,6 +21,7 @@ export function createServer() {
   app.use("/api/v1/status", statusRouter);
   app.use("/api/v1/auth", authRouter);
   app.use("/api/v1/admin/posts", adminPostsRouter);
+  app.use("/api/v1/admin/release", adminReleaseRouter);
   app.use("/api/v1/posts", postsRouter);
   app.use("/api/v1/proof", proofRouter);
   app.use(notFoundHandler);

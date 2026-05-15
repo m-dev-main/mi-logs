@@ -14,6 +14,7 @@ import type {
   ApiErrorResponse,
   ApiStatusResponse,
   DeletePostResponse,
+  ExportReleaseResponse,
   LogoutResponse,
   ProofManifestPost,
   PublicPostDetail,
@@ -686,4 +687,11 @@ export function deleteAdminPost(id: string): Promise<DeletePostResponse> {
     `/api/v1/admin/posts/${encodeURIComponent(id)}`,
     { method: "DELETE", csrf: true },
   );
+}
+
+export function exportAdminRelease(): Promise<ExportReleaseResponse> {
+  return requestJson<ExportReleaseResponse>("/api/v1/admin/release/export", {
+    method: "POST",
+    csrf: true,
+  });
 }

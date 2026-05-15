@@ -1,0 +1,11 @@
+# Local mi-log hidden service. From repo root:
+#   pnpm release && pnpm serve:release
+#   tor -f .tor-mi-log/torrc
+# Onion hostname: cat .tor-mi-log/hidden_service/hostname
+
+DataDirectory ./.tor-mi-log/data
+HiddenServiceDir ./.tor-mi-log/hidden_service
+HiddenServicePort 80 127.0.0.1:4080
+
+SocksPort 0
+ControlPort 0

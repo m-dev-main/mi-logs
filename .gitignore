@@ -17,3 +17,9 @@ keys/*.secret
 *.log
 coverage
 .turbo
+
+pages
+
+# Local Tor test instance — keys and state only (torrc may be tracked)
+.tor-mi-log/data/
+.tor-mi-log/hidden_service/

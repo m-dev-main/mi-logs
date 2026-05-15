@@ -100,6 +100,19 @@ export type DeletePostResponse = {
   };
 };
 
+export type ExportReleaseResult = {
+  releasePath: string;
+  publicPath: string;
+  publishedPostCount: number;
+  signed: boolean;
+  authorPublicKeyCopied: boolean;
+  releaseSha256: string;
+};
+
+export type ExportReleaseResponse = {
+  data: ExportReleaseResult;
+};
+
 export type AdminSessionStatus =
   | {
       authenticated: true;
