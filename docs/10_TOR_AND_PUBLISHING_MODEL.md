@@ -30,6 +30,10 @@ readonly static release server
 
 ## 3. Tor Must Expose Only Public Reader Surface
 
+**Invariant:** Tor must target **only** the readonly static release server on **`127.0.0.1:${STATIC_PORT}`** (default port **4080**). The API (`API_PORT`, default **4000**) must **not** be the `HiddenServicePort` target.
+
+Why: Tor’s hidden service connects to your local target from **inside the machine**, so the API often sees **`remoteAddress` on the loopback** even when the HTTP client is remote. Relying on “localhost-only” by socket alone would be misleading. The API additionally requires an **allowed local `Host`** on admin/auth routes so a misconfigured onion mapping (e.g. `Host: …onion`) is rejected while normal local admin traffic (`127.0.0.1:4000`, or the Vite dev `Host` from `WEBAUTHN_ORIGIN`) still works.
+
 For v0, Tor should point at the readonly static release server:
 
 ```txt
@@ -38,7 +42,13 @@ HiddenServicePort 80 127.0.0.1:4080
 
 The dynamic API remains the local writing and admin system. It can use MongoDB,
 admin routes, auth/session routes, and publishing workflows on localhost, but it
-is not the preferred Tor exposure target for v0.
+must not be the Tor exposure target for v0.
+
+Live v0 Tor target:
+
+```txt
+HiddenServicePort 80 127.0.0.1:4080
+```
 
 The release server is the public artifact server. It serves exported static files
 from `releases/latest/public`, including static post data and public proof files,
@@ -91,11 +101,15 @@ Rules:
 
 - losing it means losing the onion address
 - leaking it allows impersonation
+- the private key lives under `/opt/homebrew/var/lib/tor/mi-log/`
 - do not commit it
 - back it up securely
 - keep permissions restricted
 - local backup tooling does not copy the Tor onion private key yet; back it up
   manually until an explicit Tor-key backup task is added
+
+Warning: do not copy the onion private key into this repository. Back up
+`/opt/homebrew/var/lib/tor/mi-log/` securely outside Git.
 
 ## 7. Availability Model
 

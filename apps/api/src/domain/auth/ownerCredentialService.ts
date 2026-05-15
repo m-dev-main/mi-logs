@@ -25,6 +25,7 @@ import {
   updateCredentialAfterLogin,
   upsertRegistrationChallenge,
 } from "./ownerCredentialRepository.js";
+import { assertOwnerRegistrationBootstrap } from "./registrationBootstrap.js";
 import {
   createLoggedInSession,
   rotateCsrfTokenForSession,
@@ -116,6 +117,8 @@ export async function getRegistrationOptions(req: Request) {
     );
   }
 
+  assertOwnerRegistrationBootstrap(req);
+
   const options = await generateRegistrationOptions({
     rpName: config.WEBAUTHN_RP_NAME,
     rpID: rpIdForRequest(req),
@@ -145,6 +148,8 @@ export async function verifyRegistration(req: Request, res: Response) {
       409,
     );
   }
+
+  assertOwnerRegistrationBootstrap(req);
 
   const placeholder = await consumeRegistrationChallenge();
   if (!placeholder) {

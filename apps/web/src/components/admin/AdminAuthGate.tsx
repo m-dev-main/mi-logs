@@ -18,7 +18,18 @@ type AuthGateState =
   | { status: "ready"; session: AdminSessionStatus; error: null }
   | { status: "error"; session: null; error: PublicApiError };
 
+function localhostAdminUrl(): string | null {
+  if (window.location.hostname !== "127.0.0.1") {
+    return null;
+  }
+
+  const nextUrl = new URL(window.location.href);
+  nextUrl.hostname = "localhost";
+  return nextUrl.toString();
+}
+
 export function AdminAuthGate({ children }: AdminAuthGateProps) {
+  const canonicalAdminUrl = localhostAdminUrl();
   const [state, setState] = useState<AuthGateState>({
     status: "loading",
     session: null,
@@ -51,7 +62,7 @@ export function AdminAuthGate({ children }: AdminAuthGateProps) {
     let cancelled = false;
 
     async function loadSession() {
-      if (!cancelled) {
+      if (!cancelled && canonicalAdminUrl === null) {
         await refreshSession();
       }
     }
@@ -60,7 +71,23 @@ export function AdminAuthGate({ children }: AdminAuthGateProps) {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [canonicalAdminUrl]);
+
+  useEffect(() => {
+    if (canonicalAdminUrl !== null) {
+      window.location.replace(canonicalAdminUrl);
+    }
+  }, [canonicalAdminUrl]);
+
+  if (canonicalAdminUrl !== null) {
+    return (
+      <main className="admin-unavailable">
+        <div className="loading-state" role="status">
+          Redirecting admin to localhost for passkey support...
+        </div>
+      </main>
+    );
+  }
 
   if (state.status === "loading") {
     return (

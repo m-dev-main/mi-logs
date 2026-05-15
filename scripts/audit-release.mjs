@@ -1,11 +1,24 @@
 import { readdir, readFile, stat } from "node:fs/promises";
 import { join, relative, resolve } from "node:path";
 
+async function pathExists(path) {
+  try {
+    await stat(path);
+    return true;
+  } catch (error) {
+    if (error.code === "ENOENT") {
+      return false;
+    }
+    throw error;
+  }
+}
+
 const releaseRoot = resolve("releases/latest");
 const manifestPath = join(releaseRoot, "sovereign-manifest.json");
 const signaturePath = join(releaseRoot, "sovereign-manifest.sig");
 const authorPublicKeyPath = join(releaseRoot, "author.pub");
 const ipfsCidPath = join(releaseRoot, "ipfs-cid.txt");
+const postsJsonPath = join(releaseRoot, "public", "mi-log-data", "posts.json");
 
 const forbiddenPatterns = [
   { label: "draft seed slug", pattern: /draft-seed-post/ },
@@ -23,6 +36,20 @@ const forbiddenPatterns = [
   { label: "MongoDB URI", pattern: /mongodb(?:\+srv)?:\/\// },
   { label: "localhost admin origin", pattern: /https?:\/\/(?:localhost|127\.0\.0\.1):(?:4000|5173)\/admin/ },
   { label: "admin route", pattern: /["'`]\/admin(?:\/|["'`])/ },
+];
+
+const searchDataForbiddenPatterns = [
+  { label: "draft seed slug in search data", pattern: /draft-seed-post/ },
+  { label: "archived seed slug in search data", pattern: /archived-seed-post/ },
+  { label: "raw markdown field in search data", pattern: /\bbodyMarkdown\b/ },
+  {
+    label: "admin/auth string in search data",
+    pattern: /\b(?:admin|auth|session|csrf|webauthn|passkey)\b/i,
+  },
+  {
+    label: "private key marker in search data",
+    pattern: /-----BEGIN [A-Z ]*PRIVATE KEY-----/,
+  },
 ];
 
 const textExtensions = new Set([
@@ -76,6 +103,11 @@ async function readOptionalText(path) {
   }
 }
 
+if (!(await pathExists(releaseRoot))) {
+  reportPass("release audit skipped (releases/latest not present; run pnpm release to generate)");
+  process.exit(0);
+}
+
 let files;
 try {
   const releaseStat = await stat(releaseRoot);
@@ -84,7 +116,7 @@ try {
   }
   files = await listFiles(releaseRoot);
 } catch {
-  reportFail("releases/latest is missing; run pnpm release first");
+  reportFail("releases/latest is not a readable release directory");
   process.exit(1);
 }
 
@@ -147,6 +179,60 @@ if (authorPublicKey !== null && (signature === null || signature.trim() === ""))
     label: "missing manifest signature for published author key",
     match: "empty signature",
   });
+}
+
+const postsJsonRaw = await readOptionalText(postsJsonPath);
+if (postsJsonRaw === null) {
+  failures.push({
+    file: "public/mi-log-data/posts.json",
+    label: "missing public search data",
+    match: "missing",
+  });
+} else {
+  for (const { label, pattern } of searchDataForbiddenPatterns) {
+    const match = postsJsonRaw.match(pattern);
+    if (match) {
+      failures.push({
+        file: "public/mi-log-data/posts.json",
+        label,
+        match: match[0],
+      });
+    }
+  }
+
+  try {
+    const postsJson = JSON.parse(postsJsonRaw);
+    if (!Array.isArray(postsJson.posts) || typeof postsJson.details !== "object") {
+      failures.push({
+        file: "public/mi-log-data/posts.json",
+        label: "invalid public search data shape",
+        match: "expected posts array and details object",
+      });
+    } else {
+      postsJson.posts.forEach((post, index) => {
+        if (typeof post.bodyText !== "string") {
+          failures.push({
+            file: "public/mi-log-data/posts.json",
+            label: "missing public search body text",
+            match: `posts[${index}].bodyText`,
+          });
+        }
+        if (!Array.isArray(post.relatedSlugs)) {
+          failures.push({
+            file: "public/mi-log-data/posts.json",
+            label: "missing related-post metadata",
+            match: `posts[${index}].relatedSlugs`,
+          });
+        }
+      });
+    }
+  } catch {
+    failures.push({
+      file: "public/mi-log-data/posts.json",
+      label: "invalid public search data JSON",
+      match: "parse failed",
+    });
+  }
 }
 
 if (failures.length === 0) {

@@ -1,13 +1,8 @@
 # Local Development and Runtime
 
-## 1. Supported Machine
+## 1. Supported environments
 
-Primary development machine:
-
-```txt
-MacBook Pro M3 Pro
-macOS
-```
+Typical setups include macOS, Linux, or Windows with WSL. Use a local MongoDB instance and the ports documented below; adjust paths (for example Tor `torrc` and `HiddenServiceDir`) to match your OS and package manager.
 
 ## 2. Required Local Tools
 
@@ -59,7 +54,13 @@ MONGO_URI=mongodb://127.0.0.1:27017
 MONGO_DB_NAME=mi_log
 
 EXPOSE_ADMIN=false
+
+OWNER_REGISTRATION_TOKEN=<generate locally; omit from Git>
 ```
+
+**First-owner passkey:** `OWNER_REGISTRATION_TOKEN` must be set before the owner registers the first credential. Paste the same value into the admin UI registration field once; restart the API after changing `.env`. After registration, rotate or unset the token as you prefer.
+
+**Admin/auth HTTP boundary:** Calls to `/api/v1/admin/*` and `/api/v1/auth/*` must use a `Host` header of `127.0.0.1`, `localhost`, or `[::1]` with an optional TCP port — not an onion hostname — so accidental Tor forwarding to the API port does not classify remote readers as localhost.
 
 ## 5. Local MongoDB
 

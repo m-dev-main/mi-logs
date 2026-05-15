@@ -5,7 +5,7 @@
 Development topology:
 
 ```txt
-MacBook
+Local workstation
   ├─ MongoDB local
   │    └─ 127.0.0.1:27017
   │
@@ -22,7 +22,7 @@ MacBook
 Production-local topology:
 
 ```txt
-MacBook
+Local workstation
   ├─ MongoDB local
   ├─ Express API for local admin/writer workflows
   │    └─ 127.0.0.1:4000
@@ -153,9 +153,11 @@ http://localhost:4000
 
 Admin routes must be protected by:
 
-1. localhost-only network check
-2. WebAuthn/passkey session later
+1. localhost-only network check **plus** an explicit local `Host` allowlist on admin/auth routes (loopback source IP is insufficient when Tor or another local reverse-proxy forwards inbound traffic to a loopback listener)
+2. WebAuthn/passkey session (admin mutations already require an admin session in v0)
 3. CSRF protection later for mutations
+
+**Invariant:** Tor must target **only** the static release port (`STATIC_PORT`, default `4080`). The API (`API_PORT`, default `4000`) must not be configured as the onion `HiddenServicePort` target in v0.
 
 Admin route family:
 

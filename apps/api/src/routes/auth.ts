@@ -7,6 +7,7 @@ import {
   verifyLogin,
   verifyRegistration,
 } from "../domain/auth/index.js";
+import { requireLocalApiHost } from "../middleware/requireLocalApiHost.js";
 import { requireLocalhost } from "../middleware/requireLocalhost.js";
 
 const router = Router();
@@ -20,6 +21,7 @@ function asyncRoute(
 }
 
 router.use(requireLocalhost);
+router.use(requireLocalApiHost);
 
 router.post(
   "/webauthn/register/options",

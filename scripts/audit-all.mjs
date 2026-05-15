@@ -2,7 +2,6 @@ import { spawn } from "node:child_process";
 
 const commands = [
   ["pnpm", ["typecheck"]],
-  ["pnpm", ["release"]],
   ["pnpm", ["audit:source"]],
   ["pnpm", ["audit:release"]],
 ];

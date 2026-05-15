@@ -11,6 +11,7 @@ const adminRouteImports = [
 const adminRouteBlock = `  {
     path: "/admin",
     element: <AdminShell />,
+    errorElement: <RouteErrorFallback />,
     children: [
       { index: true, element: <AdminHomePage /> },
       { path: "new", element: <AdminNewPostPage /> },

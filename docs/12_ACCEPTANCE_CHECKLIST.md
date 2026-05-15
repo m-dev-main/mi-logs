@@ -83,11 +83,21 @@
 ## 9. Tor
 
 - [x] Tor config documented
-- [ ] onion hostname generated
+- [x] onion hostname generated
 - [ ] onion site opens in Tor Browser
-- [ ] admin blocked through onion
+- [x] admin blocked through onion
 - [x] MongoDB not exposed
 - [ ] onion private key backed up
+
+Local Tor checks (when a hidden service is configured per `docs/10_TOR_AND_PUBLISHING_MODEL.md`):
+
+- [x] onion `hostname` file appears under the configured `HiddenServiceDir` (example on Apple Silicon Homebrew: `/opt/homebrew/var/lib/tor/mi-log/hostname`)
+- [x] onion `/` returns the readonly static app through Tor
+- [x] onion `/proof` returns the readonly static app through Tor
+- [x] onion `/api/v1/admin/posts` returns static 404, not admin JSON
+- [x] onion `/api/v1/auth/session` returns static 404, not auth/session JSON
+- [ ] Tor Browser GUI open confirmed manually
+- [ ] onion private key backup confirmed
 
 ## 10. Proof/Signing Later
 

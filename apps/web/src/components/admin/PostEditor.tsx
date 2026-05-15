@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import {
   deleteAdminPost,
@@ -12,6 +12,7 @@ import { useKeyboardShortcut } from "../../hooks/useKeyboardShortcut";
 import type { AdminPost } from "../../types/api";
 import { Button } from "../ui/Button";
 import { DeletePostDialog } from "./DeletePostDialog";
+import { PasteMarkdownPanel } from "./PasteMarkdownPanel";
 import {
   PostForm,
   tagsArrayToCsv,
@@ -20,6 +21,10 @@ import {
 } from "./PostForm";
 import { PostPreview } from "./PostPreview";
 import { PostStatusBadge } from "./PostStatusBadge";
+import {
+  buildPublishChecklist,
+  PublishChecklist,
+} from "./PublishChecklist";
 
 type PostEditorProps = {
   post: AdminPost;
@@ -59,6 +64,10 @@ export function PostEditor({ post }: PostEditorProps) {
   const [isDeleting, setIsDeleting] = useState(false);
   const { saveState, markDirty, markError, markSaved, markSaving } =
     useAutosaveState("saved");
+  const checklistSummary = useMemo(
+    () => buildPublishChecklist(formValue, currentPost, saveState === "saved"),
+    [currentPost, formValue, saveState],
+  );
 
   useEffect(() => {
     setCurrentPost(post);
@@ -95,8 +104,8 @@ export function PostEditor({ post }: PostEditorProps) {
   }, [currentPost._id, formValue, markError, markSaved, markSaving]);
 
   const publishPost = useCallback(async () => {
-    const saved = await savePost();
-    if (!saved) {
+    if (!checklistSummary.canPublish) {
+      setErrorMessage("Complete the publish checklist before publishing.");
       return;
     }
 
@@ -115,7 +124,7 @@ export function PostEditor({ post }: PostEditorProps) {
           : "The post could not be published.",
       );
     }
-  }, [currentPost._id, markError, markSaved, savePost]);
+  }, [checklistSummary.canPublish, currentPost._id, markError, markSaved]);
 
   const unpublishPost = useCallback(async () => {
     setErrorMessage(null);
@@ -153,6 +162,10 @@ export function PostEditor({ post }: PostEditorProps) {
   }, [currentPost._id, navigate]);
 
   useKeyboardShortcut("s", savePost, { metaOrCtrl: true });
+  useKeyboardShortcut("Enter", publishPost, {
+    enabled: currentPost.status !== "published" && checklistSummary.canPublish,
+    metaOrCtrl: true,
+  });
 
   function updateForm(nextValue: PostFormValue) {
     setFormValue(nextValue);
@@ -169,6 +182,8 @@ export function PostEditor({ post }: PostEditorProps) {
             <PostStatusBadge status={currentPost.status} />
             <span>{saveStateLabel(saveState)}</span>
             <span>v{currentPost.canonicalVersion}</span>
+            <span>Cmd/Ctrl+S saves</span>
+            <span>Cmd/Ctrl+Enter publishes when ready</span>
           </div>
         </div>
         <div className="post-editor__actions">
@@ -180,7 +195,11 @@ export function PostEditor({ post }: PostEditorProps) {
               Unpublish
             </Button>
           ) : (
-            <Button onClick={publishPost} variant="primary">
+            <Button
+              disabled={!checklistSummary.canPublish}
+              onClick={publishPost}
+              variant="primary"
+            >
               Publish
             </Button>
           )}
@@ -195,6 +214,11 @@ export function PostEditor({ post }: PostEditorProps) {
           {errorMessage}
         </div>
       ) : null}
+
+      <div className="post-editor__assistants">
+        <PasteMarkdownPanel onApply={updateForm} value={formValue} />
+        <PublishChecklist summary={checklistSummary} />
+      </div>
 
       <div className="post-editor__grid">
         <PostForm

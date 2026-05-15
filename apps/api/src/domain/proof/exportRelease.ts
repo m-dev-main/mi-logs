@@ -34,10 +34,19 @@ export type SovereignManifest = {
   ipfsCid: string | null;
 };
 
-type ReleasePublicPost = PublicPostDetail;
+type ReleasePublicSearchFields = {
+  bodyText: string;
+  readingTimeMinutes: number;
+  relatedSlugs: string[];
+  previousSlug: string | null;
+  nextSlug: string | null;
+};
+
+type ReleasePublicPost = PublicPostDetail & ReleasePublicSearchFields;
+type ReleasePublicPostListItem = PublicPostListItem & ReleasePublicSearchFields;
 
 type StaticPublicData = {
-  posts: PublicPostListItem[];
+  posts: ReleasePublicPostListItem[];
   details: Record<string, ReleasePublicPost>;
 };
 
@@ -103,6 +112,52 @@ export function prettyJson(value: unknown): string {
   return `${JSON.stringify(value, null, 2)}\n`;
 }
 
+function decodeHtmlEntity(entity: string): string {
+  const namedEntities: Record<string, string> = {
+    amp: "&",
+    apos: "'",
+    gt: ">",
+    lt: "<",
+    nbsp: " ",
+    quot: '"',
+  };
+  const named = entity.match(/^&([a-z]+);$/i);
+  if (named) {
+    return namedEntities[named[1].toLowerCase()] ?? entity;
+  }
+
+  const decimal = entity.match(/^&#(\d+);$/);
+  if (decimal) {
+    const codePoint = Number(decimal[1]);
+    return Number.isInteger(codePoint) && codePoint <= 0x10ffff
+      ? String.fromCodePoint(codePoint)
+      : entity;
+  }
+
+  const hex = entity.match(/^&#x([0-9a-f]+);$/i);
+  if (hex) {
+    const codePoint = Number.parseInt(hex[1], 16);
+    return Number.isInteger(codePoint) && codePoint <= 0x10ffff
+      ? String.fromCodePoint(codePoint)
+      : entity;
+  }
+
+  return entity;
+}
+
+function htmlToPublicBodyText(bodyHtml: string): string {
+  return bodyHtml
+    .replace(/<[^>]*>/g, " ")
+    .replace(/&(?:[a-z]+|#\d+|#x[0-9a-f]+);/gi, decodeHtmlEntity)
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function estimateReadingTimeMinutes(bodyText: string): number {
+  const wordCount = bodyText.split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.ceil(wordCount / 220));
+}
+
 function sortReleasePosts(posts: ReleasePostDocument[]): ReleasePostDocument[] {
   return [...posts].sort((a, b) => {
     const publishedCompare = toIsoString(a.publishedAt).localeCompare(
@@ -155,8 +210,31 @@ function buildManifest(posts: ReleasePostDocument[]): SovereignManifest {
 
 function buildStaticPublicData(posts: ReleasePostDocument[]): StaticPublicData {
   const details: Record<string, ReleasePublicPost> = {};
-  const listItems = posts.map((post) => {
-    const listItem: PublicPostListItem = {
+  const listItems = posts.map((post, index) => {
+    const bodyText = htmlToPublicBodyText(post.bodyHtml);
+    const tagSet = new Set(post.tags);
+    const relatedSlugs = posts
+      .filter((candidate) => candidate.slug !== post.slug)
+      .map((candidate) => ({
+        slug: candidate.slug,
+        score: candidate.tags.filter((tag) => tagSet.has(tag)).length,
+        publishedAt: toIsoString(candidate.publishedAt),
+      }))
+      .filter((candidate) => candidate.score > 0)
+      .sort(
+        (a, b) =>
+          b.score - a.score || b.publishedAt.localeCompare(a.publishedAt),
+      )
+      .slice(0, 3)
+      .map((candidate) => candidate.slug);
+    const searchFields: ReleasePublicSearchFields = {
+      bodyText,
+      readingTimeMinutes: estimateReadingTimeMinutes(bodyText),
+      relatedSlugs,
+      previousSlug: index > 0 ? posts[index - 1].slug : null,
+      nextSlug: index < posts.length - 1 ? posts[index + 1].slug : null,
+    };
+    const listItem: ReleasePublicPostListItem = {
       title: post.title,
       slug: post.slug,
       excerpt: post.excerpt,
@@ -164,6 +242,7 @@ function buildStaticPublicData(posts: ReleasePostDocument[]): StaticPublicData {
       publishedAt: toIsoString(post.publishedAt),
       contentSha256: post.contentSha256,
       canonicalVersion: post.canonicalVersion,
+      ...searchFields,
     };
 
     details[post.slug] = {
@@ -280,6 +359,19 @@ export async function exportRelease(
     "utf8",
   );
   const proofResult = await writeReleaseProofFiles(releasePath, manifest);
+
+  const publicProofFiles = [
+    "sovereign-manifest.json",
+    "sovereign-manifest.sig",
+    "author.pub",
+    "release-sha256.txt",
+  ] as const;
+  for (const fileName of publicProofFiles) {
+    const source = join(releasePath, fileName);
+    if (await exists(source)) {
+      await cp(source, join(publicPath, fileName));
+    }
+  }
 
   return {
     releasePath,
