@@ -17,6 +17,8 @@ export type AppConfig = Readonly<{
   ADMIN_SESSION_TTL_SECONDS: number;
   AUTHOR_KEY_DIR: string;
   AUTHOR_PUBLIC_KEY_PATH: string;
+  DESKTOP_CONTROL_SECRET?: string;
+  DESKTOP_ADMIN_SOCKET_PATH?: string;
   /** Non-empty enables first-owner passkey bootstrap when Bearer matches */
   OWNER_REGISTRATION_TOKEN?: string;
   isDevelopment: boolean;
@@ -203,6 +205,15 @@ function parseOwnerRegistrationToken(
   return trimmed === "" ? undefined : trimmed;
 }
 
+function parseOptionalString(raw: string | undefined): string | undefined {
+  if (raw === undefined) {
+    return undefined;
+  }
+
+  const trimmed = raw.trim();
+  return trimmed === "" ? undefined : trimmed;
+}
+
 function parseAdminSessionTtl(raw: string | undefined): number {
   if (raw === undefined || raw.trim() === "") {
     return 86_400;
@@ -254,6 +265,12 @@ function loadConfig(): AppConfig {
     "AUTHOR_PUBLIC_KEY_PATH",
     "keys/author.pub",
   );
+  const DESKTOP_CONTROL_SECRET = parseOptionalString(
+    process.env.DESKTOP_CONTROL_SECRET,
+  );
+  const DESKTOP_ADMIN_SOCKET_PATH = parseOptionalString(
+    process.env.DESKTOP_ADMIN_SOCKET_PATH,
+  );
   const OWNER_REGISTRATION_TOKEN = parseOwnerRegistrationToken(
     process.env.OWNER_REGISTRATION_TOKEN,
   );
@@ -273,6 +290,8 @@ function loadConfig(): AppConfig {
     ADMIN_SESSION_TTL_SECONDS,
     AUTHOR_KEY_DIR,
     AUTHOR_PUBLIC_KEY_PATH,
+    DESKTOP_CONTROL_SECRET,
+    DESKTOP_ADMIN_SOCKET_PATH,
     OWNER_REGISTRATION_TOKEN,
     isDevelopment: NODE_ENV === "development",
     isProduction: NODE_ENV === "production",

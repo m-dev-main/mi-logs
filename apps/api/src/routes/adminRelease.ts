@@ -3,6 +3,7 @@ import { AppError } from "../errors/AppError.js";
 import { exportRelease } from "../domain/proof/exportRelease.js";
 import { requireAdminSession } from "../middleware/requireAdminSession.js";
 import { requireCsrf } from "../middleware/requireCsrf.js";
+import { requireDesktopControl } from "../middleware/requireDesktopControl.js";
 import { requireLocalApiHost } from "../middleware/requireLocalApiHost.js";
 import { requireLocalhost } from "../middleware/requireLocalhost.js";
 
@@ -45,6 +46,7 @@ function mapExportReleaseFailure(err: unknown): never {
   throw err;
 }
 
+router.use(requireDesktopControl);
 router.use(requireLocalhost);
 router.use(requireLocalApiHost);
 router.use(requireAdminSession);

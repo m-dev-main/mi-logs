@@ -1,0 +1,81 @@
+{
+  "name": "@mi-log/desktop",
+  "version": "0.1.0",
+  "description": "Local desktop admin and publishing shell for mi-log.",
+  "license": "MIT",
+  "author": "mi-log",
+  "private": true,
+  "type": "commonjs",
+  "main": "dist/main.js",
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "dev": "pnpm build && MI_LOG_DESKTOP_RENDERER_URL=http://127.0.0.1:5173 electron .",
+    "package:mac": "pnpm build && electron-builder --mac dmg zip --arm64",
+    "package:dir": "pnpm build && electron-builder --dir --arm64",
+    "start": "electron .",
+    "test": "pnpm build && node --test dist/runtime/*.test.js",
+    "typecheck": "tsc --noEmit -p tsconfig.json"
+  },
+  "dependencies": {
+    "@mi-log/shared": "workspace:*",
+    "mongodb": "^6.12.0"
+  },
+  "devDependencies": {
+    "@types/node": "^22.10.0",
+    "electron": "^42.3.0",
+    "electron-builder": "^26.0.12",
+    "typescript": "^5.7.2"
+  },
+  "build": {
+    "appId": "local.mi-log.desktop",
+    "productName": "mi-log",
+    "asar": true,
+    "directories": {
+      "output": "../../release/desktop"
+    },
+    "files": [
+      "dist/**/*",
+      "package.json",
+      "!**/*.test.js",
+      "!**/*.test.js.map",
+      "!**/*.map",
+      "!keys{,/**}",
+      "!drafts{,/**}",
+      "!releases{,/**}",
+      "!.env",
+      "!.env.*"
+    ],
+    "extraResources": [
+      {
+        "from": "../web/dist-desktop",
+        "to": "web-dist",
+        "filter": [
+          "**/*"
+        ]
+      }
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "hardenedRuntime": false,
+      "gatekeeperAssess": false,
+      "icon": "build/icon.icns",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ]
+    },
+    "dmg": {
+      "sign": false
+    }
+  }
+}

@@ -26,14 +26,19 @@ const checks = [
     label: "dynamic GET /api/v1/admin/posts without session",
     baseUrl: dynamicBaseUrl,
     path: "/api/v1/admin/posts",
-    status: 401,
+    statuses: [401, 403],
+    validateJson: (json, response) =>
+      response.status === 401 || json?.error?.code === "DESKTOP_CONTROL_REQUIRED",
   },
   {
     label: "dynamic GET /api/v1/auth/session unauthenticated",
     baseUrl: dynamicBaseUrl,
     path: "/api/v1/auth/session",
-    status: 200,
-    validateJson: (json) => json?.data?.authenticated === false,
+    statuses: [200, 403],
+    validateJson: (json, response) =>
+      response.status === 200
+        ? json?.data?.authenticated === false
+        : json?.error?.code === "DESKTOP_CONTROL_REQUIRED",
   },
   { label: "static GET /", baseUrl: staticBaseUrl, path: "/", status: 200 },
   {
@@ -86,8 +91,11 @@ for (const check of checks) {
     const response = await fetch(url, { headers: { Accept: "application/json" } });
     const issues = [];
 
-    if (response.status !== check.status) {
-      issues.push(`status expected ${check.status}, got ${response.status}`);
+    const expectedStatuses = check.statuses ?? [check.status];
+    if (!expectedStatuses.includes(response.status)) {
+      issues.push(
+        `status expected ${expectedStatuses.join(" or ")}, got ${response.status}`,
+      );
     }
 
     issues.push(...headerFailures(response));
@@ -100,7 +108,7 @@ for (const check of checks) {
         issues.push("response was not valid JSON");
       }
 
-      if (json !== null && !check.validateJson(json)) {
+      if (json !== null && !check.validateJson(json, response)) {
         issues.push("JSON validation failed");
       }
     } else {

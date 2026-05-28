@@ -7,8 +7,10 @@ const excludedDirectories = new Set([
   ".git",
   "coverage",
   "dist",
+  "dist-desktop",
   "docs",
   "node_modules",
+  "release",
   "releases",
 ]);
 
@@ -53,7 +55,11 @@ const forbiddenPatterns = [
   { label: "Segment analytics", pattern: /\bsegment\b/i },
   { label: "Mixpanel analytics", pattern: /\bmixpanel\b/i },
   { label: "Tailwind UI dependency", pattern: /\btailwind\b/i },
-  { label: "Bootstrap UI dependency", pattern: /\bbootstrap\b/i },
+  {
+    label: "Bootstrap UI dependency",
+    pattern:
+      /(?:from\s+["']bootstrap(?:\/|["'])|require\(\s*["']bootstrap(?:\/|["'])|["']bootstrap["'])/i,
+  },
   { label: "Material UI dependency", pattern: /\bmaterial-ui\b|["']@mui\//i },
   { label: "shadcn UI dependency", pattern: /\bshadcn\b/i },
   {
@@ -77,6 +83,8 @@ const publicSafetyDocPaths = [
   "docs/10_TOR_AND_PUBLISHING_MODEL.md",
   "docs/12_ACCEPTANCE_CHECKLIST.md",
 ];
+
+const publicSafetyDirectories = new Set(["docs", "examples"]);
 
 function findLikelyRealV3Onion(content) {
   const re = /\b([a-z2-7]{56})\.onion\b/g;
@@ -151,6 +159,33 @@ async function listSourceFiles(dir) {
   return files;
 }
 
+async function listPublicSafetyFiles(dir) {
+  const entries = await readdir(dir, { withFileTypes: true });
+  const files = [];
+
+  for (const entry of entries) {
+    const path = join(dir, entry.name);
+    const rel = relative(repoRoot, path);
+
+    if (entry.isDirectory()) {
+      if (!excludedDirectories.has(entry.name) || publicSafetyDirectories.has(entry.name)) {
+        files.push(...(await listPublicSafetyFiles(path)));
+      }
+      continue;
+    }
+
+    if (
+      entry.isFile() &&
+      !excludedFiles.has(rel) &&
+      sourceExtensions.has(extensionOf(entry.name))
+    ) {
+      files.push(path);
+    }
+  }
+
+  return files;
+}
+
 function reportPass(message) {
   console.log(`PASS ${message}`);
 }
@@ -159,11 +194,30 @@ function reportFail(message) {
   console.error(`FAIL ${message}`);
 }
 
-function collectPublicSafetyPaths(files) {
+async function collectPublicSafetyPaths(files) {
   const relSet = new Set(publicSafetyDocPaths);
   for (const file of files) {
     const rel = relative(repoRoot, file);
-    if (rel === "README.md" || rel.startsWith("apps/") || rel.startsWith("packages/")) {
+    if (
+      rel === ".env.example" ||
+      rel === "CONTRIBUTING.md" ||
+      rel === "README.md" ||
+      rel === "SECURITY.md" ||
+      rel.startsWith("apps/") ||
+      rel.startsWith("packages/")
+    ) {
+      relSet.add(rel);
+    }
+  }
+  for (const file of await listPublicSafetyFiles(repoRoot)) {
+    const rel = relative(repoRoot, file);
+    if (
+      rel === "README.md" ||
+      rel === "CONTRIBUTING.md" ||
+      rel === "SECURITY.md" ||
+      rel.startsWith("docs/") ||
+      rel.startsWith("examples/")
+    ) {
       relSet.add(rel);
     }
   }
@@ -195,7 +249,7 @@ for (const file of files) {
   }
 }
 
-const safetyPaths = collectPublicSafetyPaths(files);
+const safetyPaths = await collectPublicSafetyPaths(files);
 for (const rel of safetyPaths) {
   let content;
   try {

@@ -1,6 +1,7 @@
 import { Outlet } from "react-router-dom";
 import { useAdminPosts } from "../../hooks/useAdminPosts";
 import type { AdminSessionStatus } from "../../types/api";
+import { DesktopLockGate } from "../desktop/DesktopLockGate";
 import { AdminAuthGate } from "./AdminAuthGate";
 import { AdminSessionBar } from "./AdminSessionBar";
 import { AdminSidebar } from "./AdminSidebar";
@@ -37,10 +38,12 @@ function AuthenticatedAdminShell({
 
 export function AdminShell() {
   return (
-    <AdminAuthGate>
-      {(session, onLoggedOut) => (
-        <AuthenticatedAdminShell onLoggedOut={onLoggedOut} session={session} />
-      )}
-    </AdminAuthGate>
+    <DesktopLockGate>
+      <AdminAuthGate>
+        {(session, onLoggedOut) => (
+          <AuthenticatedAdminShell onLoggedOut={onLoggedOut} session={session} />
+        )}
+      </AdminAuthGate>
+    </DesktopLockGate>
   );
 }

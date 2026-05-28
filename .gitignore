@@ -4,9 +4,12 @@
 node_modules
 dist
 apps/web/dist
+apps/web/dist-desktop
 logs
+release
 releases
 backups
+drafts
 keys/private
 keys/private/
 keys/*.pub
@@ -14,12 +17,15 @@ keys/*.key
 keys/*.secret
 *.pem
 .DS_Store
+.vscode
+.idea
+*.local
 *.log
 coverage
 .turbo
+apps/desktop/build/icon.iconset/
 
 pages
 
-# Local Tor test instance — keys and state only (torrc may be tracked)
-.tor-mi-log/data/
-.tor-mi-log/hidden_service/
+# Local Tor runtime state. Use examples/tor/torrc.example as a template.
+.tor-mi-log/

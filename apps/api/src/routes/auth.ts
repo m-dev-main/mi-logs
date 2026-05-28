@@ -8,6 +8,7 @@ import {
   verifyRegistration,
 } from "../domain/auth/index.js";
 import { requireLocalApiHost } from "../middleware/requireLocalApiHost.js";
+import { requireDesktopControl } from "../middleware/requireDesktopControl.js";
 import { requireLocalhost } from "../middleware/requireLocalhost.js";
 
 const router = Router();
@@ -20,6 +21,7 @@ function asyncRoute(
   };
 }
 
+router.use(requireDesktopControl);
 router.use(requireLocalhost);
 router.use(requireLocalApiHost);
 

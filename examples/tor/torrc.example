@@ -1,0 +1,16 @@
+# Local mi-log hidden-service template.
+#
+# From the repository root:
+#   pnpm release
+#   pnpm serve:release
+#   tor -f examples/tor/torrc.example
+#
+# This file is a template only. The generated hidden-service directory contains
+# key material and must stay outside Git.
+
+DataDirectory ./.tor-mi-log/data
+HiddenServiceDir ./.tor-mi-log/hidden_service
+HiddenServicePort 80 127.0.0.1:4080
+
+SocksPort 0
+ControlPort 0

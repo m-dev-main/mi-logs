@@ -12,6 +12,8 @@ import {
 } from "./sessionRepository.js";
 
 export const ADMIN_SESSION_COOKIE_NAME = "mi_log_admin_session";
+export const DESKTOP_CONTROL_CSRF_TOKEN = "desktop-control";
+const DESKTOP_CONTROL_SESSION_ID_HASH = "desktop-control-session";
 
 export type AdminSessionView = {
   authenticated: true;
@@ -34,6 +36,25 @@ export type ValidatedAdminSession = {
   csrfTokenHash: string;
   expiresAt: Date;
 };
+
+export function createDesktopControlSession(): ValidatedAdminSession {
+  return {
+    sessionIdHash: DESKTOP_CONTROL_SESSION_ID_HASH,
+    csrfTokenHash: hashToken(DESKTOP_CONTROL_CSRF_TOKEN),
+    expiresAt: new Date(Date.now() + config.ADMIN_SESSION_TTL_SECONDS * 1000),
+  };
+}
+
+export function createDesktopControlSessionView(): AdminSessionView {
+  return {
+    authenticated: true,
+    registered: true,
+    csrfToken: DESKTOP_CONTROL_CSRF_TOKEN,
+    expiresAt: new Date(
+      Date.now() + config.ADMIN_SESSION_TTL_SECONDS * 1000,
+    ).toISOString(),
+  };
+}
 
 function sessionCookieOptions(maxAgeSeconds: number) {
   return {

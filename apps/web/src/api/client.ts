@@ -24,7 +24,6 @@ import type {
 } from "../types/api";
 
 let adminCsrfToken: string | null = null;
-let staticPostsPromise: Promise<StaticPostsPayload | null> | null = null;
 
 export function setAdminCsrfToken(token: string | null): void {
   adminCsrfToken = token;
@@ -239,11 +238,9 @@ function listStaticPosts(
 }
 
 async function loadStaticPosts(): Promise<StaticPostsPayload | null> {
-  staticPostsPromise ??= fetchStaticJson<StaticPostsPayload>(
-    "/mi-log-data/posts.json",
-  ).then((value) => (isStaticPostsPayload(value) ? value : null));
+  const value = await fetchStaticJson<StaticPostsPayload>("/mi-log-data/posts.json");
 
-  return staticPostsPromise;
+  return isStaticPostsPayload(value) ? value : null;
 }
 
 function normalizeOptionalText(value: unknown): string | null {
@@ -421,12 +418,68 @@ type JsonRequestOptions = {
   authorizationBearer?: string;
 };
 
+const DESKTOP_BRIDGE_ENABLED =
+  import.meta.env.VITE_MI_LOG_DESKTOP_BUILD === "true";
+
+function isDesktopAdminPath(path: string): boolean {
+  return path.startsWith("/api/v1/auth/") || path.startsWith("/api/v1/admin/");
+}
+
+async function requestJsonViaDesktop<T>(
+  path: string,
+  options: JsonRequestOptions,
+  headers: Record<string, string>,
+): Promise<T> {
+  if (!window.miLogDesktop) {
+    throw new PublicApiError(
+      {
+        code: "DESKTOP_BRIDGE_UNAVAILABLE",
+        message: "Desktop bridge unavailable.",
+      },
+      0,
+    );
+  }
+
+  let response;
+  try {
+    response = await window.miLogDesktop.admin.request({
+      path,
+      method: options.method ?? "GET",
+      headers,
+      body: options.body,
+    });
+  } catch {
+    throw new PublicApiError(
+      {
+        code: "DESKTOP_PROXY_ERROR",
+        message: "Unable to reach the desktop admin proxy.",
+      },
+      0,
+    );
+  }
+
+  const payload = response.body;
+
+  if (!response.ok) {
+    if (isApiErrorResponse(payload)) {
+      throw new PublicApiError(payload.error, response.status);
+    }
+
+    throw new PublicApiError(
+      { code: "API_ERROR", message: "The API request failed." },
+      response.status,
+    );
+  }
+
+  return payload as T;
+}
+
 async function requestJson<T>(
   path: string,
   options: JsonRequestOptions = {},
 ): Promise<T> {
   let response: Response;
-  const headers: HeadersInit = {
+  const headers: Record<string, string> = {
     Accept: "application/json",
   };
 
@@ -443,6 +496,10 @@ async function requestJson<T>(
     options.authorizationBearer.length > 0
   ) {
     headers["Authorization"] = `Bearer ${options.authorizationBearer}`;
+  }
+
+  if (DESKTOP_BRIDGE_ENABLED && window.miLogDesktop && isDesktopAdminPath(path)) {
+    return await requestJsonViaDesktop<T>(path, options, headers);
   }
 
   try {
@@ -477,6 +534,14 @@ async function requestJson<T>(
   }
 
   return payload as T;
+}
+
+async function requireDesktopPrivilegedAction(reason: string): Promise<void> {
+  if (!window.miLogDesktop) {
+    return;
+  }
+
+  await window.miLogDesktop.lock.requireBiometric(reason);
 }
 
 export async function listPublicPosts(
@@ -682,7 +747,9 @@ export function unpublishAdminPost(id: string): Promise<AdminPostResponse> {
   );
 }
 
-export function deleteAdminPost(id: string): Promise<DeletePostResponse> {
+export async function deleteAdminPost(id: string): Promise<DeletePostResponse> {
+  await requireDesktopPrivilegedAction("Confirm deleting this local post.");
+
   return requestJson<DeletePostResponse>(
     `/api/v1/admin/posts/${encodeURIComponent(id)}`,
     { method: "DELETE", csrf: true },

@@ -95,6 +95,11 @@ export function requireLocalhost(
   // Intentionally ignores X-Forwarded-For; localhost-only is the boundary here.
   const remoteAddress = req.socket.remoteAddress ?? req.ip;
 
+  if (req.desktopControl === true && !remoteAddress) {
+    next();
+    return;
+  }
+
   if (!remoteAddress || !isLoopbackAddress(remoteAddress)) {
     next(
       new AppError({

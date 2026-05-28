@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 1024" role="img" aria-label="mi-log icon">
+  <defs>
+    <linearGradient id="bg" x1="120" x2="904" y1="112" y2="916" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#282119"/>
+      <stop offset="0.56" stop-color="#11110f"/>
+      <stop offset="1" stop-color="#0b1713"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="232" x2="810" y1="210" y2="826" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f6d98f"/>
+      <stop offset="1" stop-color="#8bc7a3"/>
+    </linearGradient>
+  </defs>
+  <rect width="1024" height="1024" rx="228" fill="url(#bg)"/>
+  <path
+    fill="none"
+    stroke="url(#mark)"
+    stroke-linecap="round"
+    stroke-linejoin="round"
+    stroke-width="72"
+    d="M252 702V338l178 254 178-254v364"
+  />
+  <path
+    fill="none"
+    stroke="#f2ede1"
+    stroke-linecap="round"
+    stroke-width="54"
+    d="M742 302v400"
+    opacity="0.92"
+  />
+  <circle cx="742" cy="238" r="32" fill="#f2ede1"/>
+</svg>

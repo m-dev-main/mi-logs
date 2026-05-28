@@ -1,10 +1,14 @@
 {
   "name": "@mi-log/web",
+  "version": "0.1.0",
+  "description": "mi-log reader and local admin web interface.",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "vite --host 127.0.0.1 --port 5173",
-    "build": "tsc && vite build",
+    "build": "tsc && MI_LOG_PUBLIC_RELEASE_BUILD=true vite build",
+    "build:desktop": "tsc && VITE_MI_LOG_DESKTOP_BUILD=true vite build --outDir dist-desktop",
     "preview": "vite preview --host 127.0.0.1 --port 5173",
     "typecheck": "tsc --noEmit"
   },

@@ -27,6 +27,7 @@ import {
 } from "./ownerCredentialRepository.js";
 import { assertOwnerRegistrationBootstrap } from "./registrationBootstrap.js";
 import {
+  createDesktopControlSessionView,
   createLoggedInSession,
   rotateCsrfTokenForSession,
   validateAdminSession,
@@ -273,6 +274,10 @@ export async function verifyLogin(req: Request, res: Response) {
 }
 
 export async function getSessionStatus(req: Request): Promise<AdminSessionStatus> {
+  if (req.desktopControl === true) {
+    return createDesktopControlSessionView();
+  }
+
   const registered = await hasOwnerCredential();
   const session = await validateAdminSession(req);
 

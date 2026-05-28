@@ -1,11 +1,15 @@
 {
   "name": "@mi-log/api",
+  "version": "0.1.0",
+  "description": "Local mi-log API for readonly public posts, owner auth, admin workflow, and release export.",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "scripts": {
     "dev": "tsx watch src/index.ts",
     "build": "tsc",
     "start": "node dist/index.js",
+    "test": "pnpm build && node --test dist/middleware/*.test.js",
     "typecheck": "tsc --noEmit",
     "generate:author-key": "tsx src/scripts/generateAuthorKey.ts",
     "export:release": "tsx src/scripts/exportRelease.ts",

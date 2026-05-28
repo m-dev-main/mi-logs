@@ -1,6 +1,7 @@
 import type { NextFunction, Request, Response } from "express";
 import {
   adminSessionRequired,
+  createDesktopControlSession,
   validateAdminSession,
   type ValidatedAdminSession,
 } from "../domain/auth/index.js";
@@ -18,6 +19,12 @@ export function requireAdminSession(
   _res: Response,
   next: NextFunction,
 ): void {
+  if (req.desktopControl === true) {
+    req.adminSession = createDesktopControlSession();
+    next();
+    return;
+  }
+
   void validateAdminSession(req)
     .then((session) => {
       if (!session) {

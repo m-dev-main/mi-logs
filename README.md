@@ -12,6 +12,11 @@
 
 **Current status:** Automated audits cover source policy, optional release artifacts, and runtime boundaries when servers are running. Tor Browser GUI checks, IPFS archival, and passkey flows remain manual where noted in `docs/12_ACCEPTANCE_CHECKLIST.md`.
 
+## License
+
+mi-log is free to use, inspect, fork, modify, and redistribute under the MIT
+License. See [LICENSE](./LICENSE).
+
 ## What mi-log is not
 
 - Not a hosted SaaS blog platform or multi-tenant CMS.
@@ -136,11 +141,15 @@ HiddenServicePort 80 127.0.0.1:4080
 
 On Apple Silicon Homebrew, Tor configuration often lives under `/opt/homebrew/etc/tor/torrc` and service data under `/opt/homebrew/var/lib/tor/`. Intel Homebrew commonly uses `/usr/local/etc/tor/torrc` and `/usr/local/var/lib/tor/`. After Tor starts, the onion hostname appears under your `HiddenServiceDir` (for example `hostname` next to the service key material).
 
+A repository-local template is available at `examples/tor/torrc.example` for
+local experiments. Its generated `.tor-mi-log/` runtime directory is ignored by
+Git because it contains hidden-service state and key material.
+
 Example placeholder hostnames for documentation only (not real services):
 
 ```txt
 your-onion-address.onion
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.onion
+<56-character-v3-onion-hostname>.onion
 ```
 
 Verify through Tor that `/` and `/proof` serve the static app while `/api/v1/admin/*` and `/api/v1/auth/*` do not return admin or session JSON.
@@ -249,7 +258,7 @@ Treat `backups/` as confidential. Do not point Tor at `127.0.0.1:4000`; use the 
 
 ## Public repository safety note
 
-Before pushing to a public remote, run `pnpm audit:source` and search the working tree for machine-specific paths, real onion hostnames, PEM blocks, and personal identifiers. This repository is intended to be generic; any live onion address, home directory path, or operator-specific backup name belongs only on your machine or in private notes — not in tracked files.
+Before pushing to a public remote, run `pnpm audit:source` and search the working tree for machine-specific paths, real onion hostnames, PEM blocks, and personal identifiers. This repository is intended to be generic; any live onion address, home directory path, operator-specific backup name, or personal draft belongs only on your machine or in private notes — not in tracked files.
 
 ## Safety warnings (summary)
 

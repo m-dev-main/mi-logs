@@ -10,6 +10,7 @@ import {
 } from "../domain/posts/index.js";
 import { requireAdminSession } from "../middleware/requireAdminSession.js";
 import { requireCsrf } from "../middleware/requireCsrf.js";
+import { requireDesktopControl } from "../middleware/requireDesktopControl.js";
 import { requireLocalApiHost } from "../middleware/requireLocalApiHost.js";
 import { requireLocalhost } from "../middleware/requireLocalhost.js";
 
@@ -23,6 +24,7 @@ function asyncRoute(
   };
 }
 
+router.use(requireDesktopControl);
 router.use(requireLocalhost);
 router.use(requireLocalApiHost);
 router.use(requireAdminSession);

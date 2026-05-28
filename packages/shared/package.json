@@ -1,5 +1,8 @@
 {
   "name": "@mi-log/shared",
+  "version": "0.1.0",
+  "description": "Shared mi-log types and validation helpers.",
+  "license": "MIT",
   "private": true,
   "type": "module",
   "exports": {

@@ -20,12 +20,24 @@ export function AdminSessionBar({ session, onLogout }: AdminSessionBarProps) {
     }
   }
 
+  async function lockDesktop() {
+    await window.miLogDesktop?.lock.lock("Locked from session bar.");
+    window.dispatchEvent(new Event("mi-log-desktop-lock-changed"));
+  }
+
   return (
     <div className="admin-session-bar">
       <span>Session expires {new Date(session.expiresAt).toLocaleString()}</span>
-      <Button onClick={logout} variant="ghost">
-        Logout
-      </Button>
+      <div className="admin-session-bar__actions">
+        {window.miLogDesktop ? (
+          <Button onClick={lockDesktop} variant="ghost">
+            Lock
+          </Button>
+        ) : null}
+        <Button onClick={logout} variant="ghost">
+          Logout
+        </Button>
+      </div>
     </div>
   );
 }

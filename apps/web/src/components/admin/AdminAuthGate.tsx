@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { getAdminSession, PublicApiError } from "../../api/client";
 import { AdminNotAvailablePage } from "../../pages/admin/AdminNotAvailablePage";
 import type { AdminSessionStatus } from "../../types/api";
+import { DesktopRuntimePanel } from "../desktop/DesktopRuntimePanel";
 import { PasskeyLoginPanel } from "./PasskeyLoginPanel";
 import { PasskeyRegisterPanel } from "./PasskeyRegisterPanel";
 
@@ -106,8 +107,11 @@ export function AdminAuthGate({ children }: AdminAuthGateProps) {
 
     return (
       <main className="admin-unavailable">
-        <div className="error-state" role="alert">
-          {state.error.message}
+        <div className="admin-unavailable__stack">
+          <div className="error-state" role="alert">
+            {state.error.message}
+          </div>
+          <DesktopRuntimePanel />
         </div>
       </main>
     );

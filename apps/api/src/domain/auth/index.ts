@@ -9,6 +9,7 @@ export {
 export {
   adminSessionRequired,
   assertValidCsrfToken,
+  createDesktopControlSession,
   destroyCurrentSession,
   validateAdminSession,
   type ValidatedAdminSession,

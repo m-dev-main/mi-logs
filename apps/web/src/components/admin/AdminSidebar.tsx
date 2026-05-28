@@ -2,6 +2,8 @@ import { useCallback, useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { exportAdminRelease, PublicApiError } from "../../api/client";
 import type { AdminPost, PostStatus } from "../../types/api";
+import { DesktopReleasePanel } from "../desktop/DesktopReleasePanel";
+import { DesktopRuntimePanel } from "../desktop/DesktopRuntimePanel";
 import { Button } from "../ui/Button";
 
 type AdminSidebarProps = {
@@ -12,6 +14,7 @@ const statuses: PostStatus[] = ["draft", "published", "archived"];
 
 export function AdminSidebar({ posts }: AdminSidebarProps) {
   const navigate = useNavigate();
+  const isDesktop = window.miLogDesktop !== undefined;
   const [releaseBusy, setReleaseBusy] = useState(false);
   const [releaseMessage, setReleaseMessage] = useState<string | null>(null);
 
@@ -45,24 +48,28 @@ export function AdminSidebar({ posts }: AdminSidebarProps) {
       <Button onClick={() => navigate("/admin/new")} variant="primary">
         New post
       </Button>
-      <div className="admin-sidebar__release">
-        <Button
-          disabled={releaseBusy}
-          onClick={runExportRelease}
-          variant="secondary"
-        >
-          {releaseBusy ? "Exporting…" : "Export static release"}
-        </Button>
-        <p className="admin-sidebar__release-hint">
-          Same as <code>pnpm export:release</code> (needs <code>pnpm build:web</code>{" "}
-          first). Writes <code>releases/latest</code> for Tor/IPFS serving.
-        </p>
-        {releaseMessage ? (
-          <p className="admin-sidebar__release-status" role="status">
-            {releaseMessage}
+      {isDesktop ? (
+        <DesktopReleasePanel />
+      ) : (
+        <div className="admin-sidebar__release">
+          <Button
+            disabled={releaseBusy}
+            onClick={runExportRelease}
+            variant="secondary"
+          >
+            {releaseBusy ? "Exporting..." : "Export static release"}
+          </Button>
+          <p className="admin-sidebar__release-hint">
+            Writes <code>releases/latest</code> for readonly serving.
           </p>
-        ) : null}
-      </div>
+          {releaseMessage ? (
+            <p className="admin-sidebar__release-status" role="status">
+              {releaseMessage}
+            </p>
+          ) : null}
+        </div>
+      )}
+      <DesktopRuntimePanel />
       <nav className="admin-sidebar__nav" aria-label="Admin sections">
         <NavLink
           className={({ isActive }) =>

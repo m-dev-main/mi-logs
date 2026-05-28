@@ -1,4 +1,4 @@
-import { createBrowserRouter } from "react-router-dom";
+import { createBrowserRouter, createHashRouter } from "react-router-dom";
 import App from "./App";
 import { AdminShell } from "./components/admin/AdminShell";
 import { RouteErrorFallback } from "./components/RouteErrorFallback";
@@ -12,7 +12,7 @@ import { PostDetailPage } from "./pages/PostDetailPage";
 import { ProofPage } from "./pages/ProofPage";
 import { SearchPage } from "./pages/SearchPage";
 
-export const router = createBrowserRouter([
+const routes = [
   {
     path: "/admin",
     element: <AdminShell />,
@@ -36,4 +36,8 @@ export const router = createBrowserRouter([
       { path: "*", element: <NotFoundPage /> },
     ],
   },
-]);
+];
+
+export const router = window.miLogDesktop
+  ? createHashRouter(routes)
+  : createBrowserRouter(routes);

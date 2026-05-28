@@ -58,6 +58,10 @@ Admin remains localhost-only and outside the Tor exposure path.
 
 ## 4. Intended torrc Snippet
 
+The tracked sample template lives at `examples/tor/torrc.example`. Copy it or
+translate it into your Tor installation path; do not commit generated
+hidden-service state.
+
 For Homebrew Tor on Apple Silicon macOS:
 
 ```txt
@@ -90,7 +94,7 @@ After Tor starts, hostname should be readable at:
 This file contains:
 
 ```txt
-xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx.onion
+<56-character-v3-onion-hostname>.onion
 ```
 
 ## 6. Onion Private Key

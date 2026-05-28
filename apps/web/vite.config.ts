@@ -49,8 +49,11 @@ function publicReleaseBuildPlugin(): Plugin {
 }
 
 export default defineConfig(({ command }) => ({
+  base: command === "build" ? "./" : "/",
   plugins:
-    command === "build" ? [publicReleaseBuildPlugin(), react()] : [react()],
+    command === "build" && process.env.MI_LOG_PUBLIC_RELEASE_BUILD === "true"
+      ? [publicReleaseBuildPlugin(), react()]
+      : [react()],
   build: {
     target: "esnext",
     outDir: "dist",

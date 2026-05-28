@@ -108,6 +108,390 @@
   padding: var(--space-3) var(--space-4);
 }
 
+.admin-session-bar__actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.desktop-lock-panel {
+  display: grid;
+  width: min(34rem, 100%);
+  gap: var(--space-4);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: var(--color-bg-glass);
+  box-shadow: var(--shadow-soft);
+  padding: clamp(1.5rem, 5vw, 3rem);
+}
+
+.desktop-lock-panel h1 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-2xl);
+  line-height: 1;
+}
+
+.desktop-lock-panel p {
+  margin: 0;
+  color: var(--color-text-muted);
+}
+
+.desktop-lock-panel__error {
+  color: #efb0b0;
+}
+
+.desktop-lock-panel__reason {
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.desktop-setup-panel {
+  display: grid;
+  gap: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.035);
+  box-shadow: var(--shadow-border);
+  padding: var(--space-4);
+}
+
+.desktop-setup-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.desktop-setup-panel__header h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  line-height: 1.1;
+}
+
+.desktop-setup-panel__header .eyebrow {
+  margin-bottom: var(--space-1);
+}
+
+.desktop-setup-panel__checks {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.desktop-setup-panel__checks li {
+  display: grid;
+  grid-template-columns: 4.2rem minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.18);
+  padding: var(--space-3);
+}
+
+.desktop-setup-panel__checks li > span {
+  border-radius: var(--radius-sm);
+  background: rgba(255, 255, 255, 0.08);
+  color: var(--color-text-soft);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  padding: 0.18rem 0.35rem;
+  text-align: center;
+}
+
+.desktop-setup-panel__checks .is-ok > span {
+  color: #76d39c;
+}
+
+.desktop-setup-panel__checks .is-warning > span {
+  color: var(--color-accent);
+}
+
+.desktop-setup-panel__checks .is-error > span {
+  color: #efb0b0;
+}
+
+.desktop-setup-panel__checks strong,
+.desktop-setup-panel__checks small {
+  display: block;
+}
+
+.desktop-setup-panel__checks small,
+.desktop-setup-panel__meta,
+.desktop-setup-panel__error {
+  margin: 0;
+  color: var(--color-text-soft);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  overflow-wrap: anywhere;
+}
+
+.desktop-setup-panel__error {
+  color: #efb0b0;
+}
+
+.desktop-setup-panel__header .button {
+  min-height: auto;
+  font-size: var(--text-xs);
+  padding: 0.45rem 0.75rem;
+}
+
+.desktop-runtime-panel {
+  display: grid;
+  gap: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.035);
+  box-shadow: var(--shadow-border);
+  padding: var(--space-4);
+}
+
+.desktop-runtime-panel__header,
+.desktop-runtime-panel__actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.desktop-runtime-panel__header h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  line-height: 1.1;
+}
+
+.desktop-runtime-panel__header .eyebrow {
+  margin-bottom: var(--space-1);
+}
+
+.desktop-runtime-panel__services {
+  display: grid;
+  gap: var(--space-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.desktop-runtime-panel__services li {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  gap: var(--space-3);
+  align-items: start;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.18);
+  padding: var(--space-3);
+}
+
+.desktop-runtime-panel__services strong,
+.desktop-runtime-panel__services small {
+  display: block;
+}
+
+.desktop-runtime-panel__services small {
+  color: var(--color-text-soft);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+  overflow-wrap: anywhere;
+}
+
+.desktop-runtime-panel__dot {
+  width: 0.65rem;
+  height: 0.65rem;
+  margin-top: 0.28rem;
+  border-radius: 50%;
+  background: var(--color-text-soft);
+  box-shadow: 0 0 0 0.25rem rgba(255, 255, 255, 0.04);
+}
+
+.desktop-runtime-panel__services .is-running .desktop-runtime-panel__dot {
+  background: #76d39c;
+}
+
+.desktop-runtime-panel__services .is-starting .desktop-runtime-panel__dot,
+.desktop-runtime-panel__services .is-stopping .desktop-runtime-panel__dot {
+  background: var(--color-accent);
+}
+
+.desktop-runtime-panel__services .is-failed .desktop-runtime-panel__dot {
+  background: #ef8f8f;
+}
+
+.desktop-runtime-panel__error,
+.desktop-runtime-panel__empty {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.desktop-runtime-panel__error {
+  color: #efb0b0;
+}
+
+.desktop-runtime-panel__actions {
+  flex-wrap: wrap;
+}
+
+.desktop-runtime-panel__onion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.22);
+  padding: var(--space-2) var(--space-3);
+}
+
+.desktop-runtime-panel__onion code {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--color-accent-strong);
+  font-size: var(--text-xs);
+}
+
+.desktop-runtime-panel__log {
+  max-height: 12rem;
+  margin: 0;
+  overflow: auto;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.28);
+  color: var(--color-text-soft);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  padding: var(--space-3);
+  white-space: pre-wrap;
+}
+
+.desktop-runtime-panel__actions .button,
+.desktop-runtime-panel__header .button {
+  min-height: auto;
+  font-size: var(--text-xs);
+  padding: 0.45rem 0.75rem;
+}
+
+.desktop-release-panel {
+  display: grid;
+  gap: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg);
+  background: rgba(255, 255, 255, 0.04);
+  box-shadow: var(--shadow-border);
+  padding: var(--space-4);
+}
+
+.desktop-release-panel__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.desktop-release-panel__header h2 {
+  margin: 0;
+  font-family: var(--font-serif);
+  font-size: var(--text-lg);
+  line-height: 1.1;
+}
+
+.desktop-release-panel__header .eyebrow {
+  margin-bottom: var(--space-1);
+}
+
+.desktop-release-panel__actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: var(--space-2);
+}
+
+.desktop-release-panel__actions .button,
+.desktop-release-panel__proof .button {
+  min-height: auto;
+  font-size: var(--text-xs);
+  padding: 0.45rem 0.7rem;
+}
+
+.desktop-release-panel__proof {
+  display: grid;
+  gap: var(--space-2);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: var(--space-3);
+}
+
+.desktop-release-panel__proof-row {
+  display: grid;
+  grid-template-columns: 4.6rem minmax(0, 1fr) auto;
+  align-items: center;
+  gap: var(--space-2);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.18);
+  padding: var(--space-2);
+}
+
+.desktop-release-panel__proof-row span,
+.desktop-release-panel__key span {
+  color: var(--color-text-soft);
+  font-family: var(--font-mono);
+  font-size: var(--text-xs);
+}
+
+.desktop-release-panel__proof-row code {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  color: var(--color-accent-strong);
+  font-size: var(--text-xs);
+}
+
+.desktop-release-panel__key {
+  display: grid;
+  gap: var(--space-2);
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.18);
+  padding: var(--space-2);
+}
+
+.desktop-release-panel__key > div {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-2);
+}
+
+.desktop-release-panel__key pre,
+.desktop-release-panel__result pre {
+  max-height: 12rem;
+  margin: 0;
+  overflow: auto;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.28);
+  color: var(--color-text-soft);
+  font-size: var(--text-xs);
+  line-height: 1.5;
+  padding: var(--space-3);
+  white-space: pre-wrap;
+}
+
+.desktop-release-panel__error,
+.desktop-release-panel__status,
+.desktop-release-panel__result p {
+  margin: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  line-height: 1.45;
+}
+
+.desktop-release-panel__error {
+  color: #efb0b0;
+}
+
+.desktop-release-panel__result {
+  display: grid;
+  gap: var(--space-2);
+}
+
 .proof-page {
   max-width: min(1080px, 100%);
 }
